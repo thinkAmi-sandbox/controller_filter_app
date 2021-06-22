@@ -1,21 +1,14 @@
 class HomeController < ApplicationController
+  before_action :set_form, only: :create
+  before_action :validate_form, only: :create
+  before_action :validate_api, only: :create
+
   def new
     @create_form = CreateForm.new
   end
 
   def create
-    @create_form = CreateForm.new(create_params)
-    if @create_form.invalid?
-      flash[:messages] = @create_form.errors.map(&:full_message)
-      return redirect_to home_new_path
-    end
-
     code = @create_form.code
-
-    unless valid_by_api?(code)
-      flash[:messages] = ['バリデーションエラーとなりました']
-      return redirect_to home_new_path
-    end
 
     begin
       create_by_api!(code)
@@ -41,5 +34,23 @@ class HomeController < ApplicationController
   def create_by_api!(code)
     # 外部APIを使った登録：常にTrueを返す
     true
+  end
+
+  def set_form
+    @create_form = CreateForm.new(create_params)
+  end
+
+  def validate_form
+    return if @create_form.valid?
+
+    flash[:messages] = @create_form.errors.map(&:full_message)
+    redirect_to home_new_path
+  end
+
+  def validate_api
+    return if valid_by_api?(@create_form.code)
+
+    flash[:messages] = ['バリデーションエラーとなりました']
+    redirect_to home_new_path
   end
 end
