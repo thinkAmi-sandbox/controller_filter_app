@@ -8,16 +8,12 @@ class HomeController < ApplicationController
   end
 
   def create
-    code = @create_form.code
-
-    begin
-      create_by_api!(code)
-      flash[:messages] = ['登録できました']
-      redirect_to home_new_path
-    rescue StandardError
-      flash[:messages] = ['登録に失敗しました']
-      redirect_to home_new_path
-    end
+    create_by_api!(@create_form.code)
+    flash[:messages] = ['登録できました']
+    redirect_to home_new_path
+  rescue StandardError
+    flash[:messages] = ['登録に失敗しました']
+    redirect_to home_new_path
   end
 
   private
