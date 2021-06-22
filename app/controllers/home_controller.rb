@@ -1,14 +1,16 @@
 class HomeController < ApplicationController
   def new
+    @create_form = CreateForm.new
   end
 
   def create
-    code = create_params[:code]
-
-    unless code =~ /[0-9]{2}/
-      flash[:messages] = ['フォーマットが異なります']
+    @create_form = CreateForm.new(create_params)
+    if @create_form.invalid?
+      flash[:messages] = @create_form.errors.map(&:full_message)
       return redirect_to home_new_path
     end
+
+    code = @create_form.code
 
     unless valid_by_api?(code)
       flash[:messages] = ['バリデーションエラーとなりました']
@@ -28,7 +30,7 @@ class HomeController < ApplicationController
   private
 
   def create_params
-    params.permit(:code)
+    params.require(:create_form).permit(:code)
   end
 
   def valid_by_api?(code)

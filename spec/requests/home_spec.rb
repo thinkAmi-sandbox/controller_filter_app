@@ -15,7 +15,7 @@ RSpec.describe 'Homes', type: :request do
 
     context '正常系' do
       before do
-        params = { code: valid_code }
+        params = { create_form: { code: valid_code }}
         post home_create_path(format: :json), params: params
       end
 
@@ -32,7 +32,7 @@ RSpec.describe 'Homes', type: :request do
     context '異常系' do
       context 'code のフォーマットが不正な場合' do
         before do
-          params = { code: 'abc' }
+          params = { create_form: { code: 'abc' }}
           post home_create_path(format: :json), params: params
         end
 
@@ -50,7 +50,7 @@ RSpec.describe 'Homes', type: :request do
         before do
           expect_any_instance_of(HomeController).to receive(:valid_by_api?).once.with(valid_code).and_return(false)
 
-          params = { code: valid_code }
+          params = { create_form: { code: valid_code }}
           post home_create_path(format: :json), params: params
         end
 
@@ -68,7 +68,7 @@ RSpec.describe 'Homes', type: :request do
         before do
           expect_any_instance_of(HomeController).to receive(:create_by_api!).once.with(valid_code).and_raise(StandardError)
 
-          params = { code: valid_code }
+          params = { create_form: { code: valid_code }}
           post home_create_path(format: :json), params: params
         end
 
